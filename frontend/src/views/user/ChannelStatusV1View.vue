@@ -52,7 +52,6 @@ import MonitorHero, {
 import MonitorCardGrid from '@/components/user/monitor/MonitorCardGrid.vue'
 import MonitorDetailDialog from '@/components/user/MonitorDetailDialog.vue'
 import ChannelProviderSelector, { type ProviderCategory } from '@/components/channels/ChannelProviderSelector.vue'
-import { DOMESTIC_PLATFORMS } from '@/constants/providerBrands'
 import { DEFAULT_INTERVAL_SECONDS, STATUS_OPERATIONAL } from '@/constants/channelMonitor'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
 
@@ -89,7 +88,8 @@ const filteredItems = computed(() => {
     if (selectedCategory.value === 'gpt') return prov === 'openai'
     if (selectedCategory.value === 'gemini') return prov === 'gemini'
     if (selectedCategory.value === 'domestic') {
-      return DOMESTIC_PLATFORMS.some((p) => prov.includes(p))
+      // "国模与其他": 排除国际三大（anthropic, openai, gemini），囊括国内所有模型及其他未知渠道
+      return prov !== 'anthropic' && prov !== 'openai' && prov !== 'gemini'
     }
     return true
   })

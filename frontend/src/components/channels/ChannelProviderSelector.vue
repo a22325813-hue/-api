@@ -188,7 +188,7 @@
         />
       </button>
 
-      <!-- 选项 5: 国模 (四宫格合并: DeepSeek + GLM + Kimi + 留白) -->
+      <!-- 选项 5: 国模与其他 (四宫格合并: DeepSeek + GLM + Kimi + 留白) -->
       <button
         type="button"
         role="radio"
@@ -211,10 +211,10 @@
               modelValue === 'domestic' ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-[#1d1d1f] dark:text-gray-100'
             ]"
           >
-            国模
+            国模与其他
           </span>
           <span class="block text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">
-            DeepSeek · GLM · Kimi
+            DeepSeek · 智谱 · 其他
           </span>
         </div>
         <div

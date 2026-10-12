@@ -608,11 +608,11 @@ function onCategoryChange(cat: ProviderCategory) {
   } else if (cat === 'gemini') {
     filter.value.platforms = ['gemini']
   } else if (cat === 'domestic') {
-    // 找出当前已配置的国内平台交集，如果没有则全填国内列表
-    const availableDomestic = (dimensions.value.platforms || [])
+    // "国模与其他": 选出所有非三大国际供应商（anthropic, openai, gemini）的平台
+    const nonBigThree = (dimensions.value.platforms || [])
       .map((p) => p.value)
-      .filter((val) => DOMESTIC_PLATFORMS.includes(val))
-    filter.value.platforms = availableDomestic.length > 0 ? availableDomestic : ['deepseek', 'zhipu', 'kimi']
+      .filter((val) => val !== 'anthropic' && val !== 'openai' && val !== 'gemini')
+    filter.value.platforms = nonBigThree.length > 0 ? nonBigThree : DOMESTIC_PLATFORMS
   }
 }
 
