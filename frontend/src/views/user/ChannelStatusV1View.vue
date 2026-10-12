@@ -10,8 +10,13 @@
       @refresh="manualReload"
     />
 
+    <!-- 顶部供应商快捷筛选栏 -->
+    <div class="my-6">
+      <ChannelProviderSelector v-model="selectedCategory" />
+    </div>
+
     <MonitorCardGrid
-      :items="items"
+      :items="filteredItems"
       :window="currentWindow"
       :countdown-seconds="countdown"
       :loading="loading"
@@ -46,6 +51,8 @@ import MonitorHero, {
 } from '@/components/user/monitor/MonitorHero.vue'
 import MonitorCardGrid from '@/components/user/monitor/MonitorCardGrid.vue'
 import MonitorDetailDialog from '@/components/user/MonitorDetailDialog.vue'
+import ChannelProviderSelector, { type ProviderCategory } from '@/components/channels/ChannelProviderSelector.vue'
+import { DOMESTIC_PLATFORMS } from '@/constants/providerBrands'
 import { DEFAULT_INTERVAL_SECONDS, STATUS_OPERATIONAL } from '@/constants/channelMonitor'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
 
@@ -53,6 +60,7 @@ const { t } = useI18n()
 const appStore = useAppStore()
 
 // ── State ──
+const selectedCategory = ref<ProviderCategory>('all')
 const items = ref<UserMonitorView[]>([])
 const loading = ref(false)
 const currentWindow = ref<MonitorWindow>('7d')
@@ -73,9 +81,24 @@ const autoRefresh = useAutoRefresh({
 const countdown = autoRefresh.countdown
 
 // ── Computed ──
+const filteredItems = computed(() => {
+  if (selectedCategory.value === 'all') return items.value
+  return items.value.filter((item) => {
+    const prov = (item.provider || '').toLowerCase()
+    if (selectedCategory.value === 'claude') return prov === 'anthropic'
+    if (selectedCategory.value === 'gpt') return prov === 'openai'
+    if (selectedCategory.value === 'gemini') return prov === 'gemini'
+    if (selectedCategory.value === 'domestic') {
+      return DOMESTIC_PLATFORMS.some((p) => prov.includes(p))
+    }
+    return true
+  })
+})
+
 const overallStatus = computed<OverallStatus>(() => {
-  if (items.value.length === 0) return 'operational'
-  for (const it of items.value) {
+  const currentList = filteredItems.value
+  if (currentList.length === 0) return 'operational'
+  for (const it of currentList) {
     if (it.primary_status === 'failed' || it.primary_status === 'error') return 'degraded'
     if (it.primary_status !== STATUS_OPERATIONAL) return 'degraded'
   }

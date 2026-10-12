@@ -54,6 +54,14 @@
           </button>
         </header>
 
+        <!-- 顶部供应商快捷分类磁贴栏 -->
+        <div class="px-5 py-3 border-b border-gray-100 dark:border-dark-700 bg-gray-50/50 dark:bg-dark-900/40 sm:px-6">
+          <ChannelProviderSelector
+            :model-value="activeProviderCategory"
+            @update:model-value="onCategoryChange"
+          />
+        </div>
+
         <!-- First-upgrade silent backfill: show until 30d product window is covered -->
         <div
           v-if="bootstrapActive"
@@ -470,6 +478,8 @@ import MetricCell from '@/features/channel-monitor-v2/MetricCell.vue'
 import MonitorRankBadge from '@/features/channel-monitor-v2/MonitorRankBadge.vue'
 import MonitorTrendChart from '@/features/channel-monitor-v2/MonitorTrendChart.vue'
 import RelayPulseMatrix from '@/features/channel-monitor-v2/RelayPulseMatrix.vue'
+import ChannelProviderSelector, { type ProviderCategory } from '@/components/channels/ChannelProviderSelector.vue'
+import { DOMESTIC_PLATFORMS } from '@/constants/providerBrands'
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
 import { extractApiErrorMessage } from '@/utils/apiError'
@@ -572,6 +582,40 @@ let autoRefreshTimer: number | null = null
 const hasDimensionFilter = computed(
   () => filter.value.platforms.length + filter.value.groupIds.length + filter.value.models.length > 0
 )
+
+const activeProviderCategory = computed<ProviderCategory>(() => {
+  const currentPlatforms = filter.value.platforms
+  if (currentPlatforms.length === 0) return 'all'
+  if (currentPlatforms.length === 1) {
+    if (currentPlatforms[0] === 'anthropic') return 'claude'
+    if (currentPlatforms[0] === 'openai') return 'gpt'
+    if (currentPlatforms[0] === 'gemini') return 'gemini'
+  }
+  // 如果选中的平台全部属于国模集合
+  if (currentPlatforms.every((p) => DOMESTIC_PLATFORMS.includes(p))) {
+    return 'domestic'
+  }
+  return 'all'
+})
+
+function onCategoryChange(cat: ProviderCategory) {
+  if (cat === 'all') {
+    filter.value.platforms = []
+  } else if (cat === 'claude') {
+    filter.value.platforms = ['anthropic']
+  } else if (cat === 'gpt') {
+    filter.value.platforms = ['openai']
+  } else if (cat === 'gemini') {
+    filter.value.platforms = ['gemini']
+  } else if (cat === 'domestic') {
+    // 找出当前已配置的国内平台交集，如果没有则全填国内列表
+    const availableDomestic = (dimensions.value.platforms || [])
+      .map((p) => p.value)
+      .filter((val) => DOMESTIC_PLATFORMS.includes(val))
+    filter.value.platforms = availableDomestic.length > 0 ? availableDomestic : ['deepseek', 'zhipu', 'kimi']
+  }
+}
+
 // Full platform catalog (never pruned). Groups/models cascade by selected platforms
 // so choosing a platform narrows the other pickers without collapsing platforms.
 const platformOptions = computed(() =>
