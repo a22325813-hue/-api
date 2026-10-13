@@ -185,6 +185,16 @@ const routes: RouteRecordRaw[] = [
       titleKey: 'modelPlaza.title'
     }
   },
+  {
+    path: '/models',
+    name: 'ModelPricing',
+    alias: '/pricing',
+    component: () => import('@/views/models/ModelPricingView.vue'),
+    meta: {
+      requiresAuth: false,
+      title: '模型与价格'
+    }
+  },
 
   // ==================== User Routes ====================
   {

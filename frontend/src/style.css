@@ -79,6 +79,45 @@
     @apply active:scale-[0.98];
   }
 
+  /* Apple Clean 特效类 */
+  html.user-ui .apple-glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.07);
+  }
+
+  html.user-ui .apple-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html.user-ui .apple-card:hover {
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+  }
+
+  html.user-ui .apple-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #1d1d1f;
+    color: #ffffff;
+    border-radius: 9999px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html.user-ui .apple-pill-btn:hover {
+    background: #0071e3;
+    transform: scale(1.02);
+  }
+
   .btn-primary {
     @apply bg-gradient-to-r from-primary-500 to-primary-600;
     @apply text-white shadow-md shadow-primary-500/25;
@@ -774,5 +813,91 @@
 
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* User-only appearance. html scope includes dialogs/overlays Teleported to body. */
+@layer components {
+  html.user-ui .modal-overlay {
+    @apply fixed inset-0 z-50;
+    @apply bg-black/40 backdrop-blur-md;
+    @apply flex items-center justify-center p-3 sm:p-6;
+  }
+
+  html.user-ui .modal-content {
+    @apply w-full;
+    @apply max-h-[92vh] sm:max-h-[88vh];
+    @apply bg-white/95 dark:bg-dark-900/95 backdrop-blur-2xl;
+    @apply rounded-[24px] shadow-[0_24px_64px_rgba(0,0,0,0.18)];
+    @apply border border-black/5 dark:border-white/10;
+    @apply flex flex-col;
+  }
+
+  html.user-ui .modal-header {
+    @apply border-b border-gray-100 px-6 py-4 dark:border-dark-800;
+    @apply flex items-center justify-between;
+    @apply flex-shrink-0;
+  }
+
+  html.user-ui .modal-title {
+    @apply text-lg font-bold text-gray-900 dark:text-white tracking-tight;
+  }
+
+  html.user-ui .modal-body {
+    @apply px-6 py-5;
+    @apply flex-1 overflow-y-auto;
+  }
+
+  html.user-ui .modal-footer {
+    @apply border-t border-gray-100 px-6 py-4 dark:border-dark-800;
+    @apply flex items-center justify-end gap-3;
+    @apply flex-shrink-0;
+  }
+
+  html.user-ui .sidebar {
+    @apply fixed top-[50px] bottom-0 left-0 z-30;
+    @apply w-64 bg-white/80 dark:bg-dark-900/80 backdrop-blur-xl;
+    @apply border-r border-black/5 dark:border-white/5;
+    @apply flex flex-col;
+    @apply transition-transform duration-300;
+    transition-property: width, transform;
+  }
+
+  html.user-ui .sidebar-header {
+    @apply hidden; /* 品牌与Logo已提升至全站置顶 Apple Header，侧边栏Header隐藏以保持极简通透 */
+  }
+
+  html.user-ui .sidebar-link {
+    @apply flex items-center gap-3 rounded-full py-2.5;
+    @apply overflow-hidden;
+    @apply text-sm font-medium;
+    @apply text-gray-600 dark:text-dark-300;
+    @apply transition-all duration-200;
+    @apply hover:bg-black/5 dark:hover:bg-white/10;
+    @apply hover:text-gray-900 dark:hover:text-white;
+    padding-left: 1.0625rem;
+    padding-right: 0.875rem;
+  }
+
+  html.user-ui .sidebar-link-active {
+    @apply bg-black text-white dark:bg-white dark:text-black shadow-sm;
+    @apply hover:bg-zinc-800 dark:hover:bg-zinc-200;
+  }
+
+}
+
+@layer base {
+  html.user-ui {
+    --ui-primary-50: 240 247 255;
+    --ui-primary-100: 224 239 254;
+    --ui-primary-200: 186 224 253;
+    --ui-primary-300: 124 199 251;
+    --ui-primary-400: 56 168 248;
+    --ui-primary-500: 0 113 227;
+    --ui-primary-600: 0 119 237;
+    --ui-primary-700: 0 91 181;
+    --ui-primary-800: 0 76 150;
+    --ui-primary-900: 0 63 122;
+    --ui-primary-950: 0 37 76;
   }
 }

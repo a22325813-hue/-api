@@ -11,9 +11,16 @@ import { getSetupStatus } from '@/api/setup'
 import { updateFavicon } from '@/utils/branding'
 import { FeatureFlags, isFeatureFlagEnabled } from '@/utils/featureFlags'
 import { resolveSiteBillingMode } from '@/utils/siteBillingMode'
+import { isAdminRoute, syncUserUiScope, clearUserUiScope } from '@/utils/uiRouteScope'
 
 const router = useRouter()
 const route = useRoute()
+
+// Keep body Teleports in the same visual scope as the current route. Sync before
+// rendering and remove the flag when entering admin routes or unmounting the app.
+watch(() => isAdminRoute(route), syncUserUiScope, { immediate: true, flush: 'sync' })
+onBeforeUnmount(clearUserUiScope)
+
 const appStore = useAppStore()
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()

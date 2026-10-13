@@ -5,19 +5,33 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 主色调 - Teal/Cyan 青色系
+        // Default HEAD teal palette; user-route html variables opt into Apple blue.
         primary: {
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
-          950: '#042f2e'
+          50: 'rgb(var(--ui-primary-50, 240 253 250) / <alpha-value>)',
+          100: 'rgb(var(--ui-primary-100, 204 251 241) / <alpha-value>)',
+          200: 'rgb(var(--ui-primary-200, 153 246 228) / <alpha-value>)',
+          300: 'rgb(var(--ui-primary-300, 94 234 212) / <alpha-value>)',
+          400: 'rgb(var(--ui-primary-400, 45 212 191) / <alpha-value>)',
+          500: 'rgb(var(--ui-primary-500, 20 184 166) / <alpha-value>)',
+          600: 'rgb(var(--ui-primary-600, 13 148 136) / <alpha-value>)',
+          700: 'rgb(var(--ui-primary-700, 15 118 110) / <alpha-value>)',
+          800: 'rgb(var(--ui-primary-800, 17 94 89) / <alpha-value>)',
+          900: 'rgb(var(--ui-primary-900, 19 78 74) / <alpha-value>)',
+          950: 'rgb(var(--ui-primary-950, 4 47 46) / <alpha-value>)'
+        },
+        // Apple Clean 专属命名空间
+        apple: {
+          bg: '#ffffff',
+          canvas: '#fbfbfd',
+          shelf: '#f5f5f7',
+          hover: '#ececf0',
+          border: 'rgba(0, 0, 0, 0.07)',
+          'border-strong': 'rgba(0, 0, 0, 0.12)',
+          main: '#1d1d1f',
+          sub: '#6e6e73',
+          tertiary: '#86868b',
+          blue: '#0071e3',
+          green: '#34c759'
         },
         // 辅助色 - 深蓝灰
         accent: {
