@@ -18,18 +18,17 @@ describe('route-based UI isolation', () => {
     expect(isAdminRoute({ path: '/custom', meta: {}, matched: [{ meta: { requiresAdmin: true } }] } as Parameters<typeof isAdminRoute>[0])).toBe(true)
   })
 
-  it('updates Teleport scope synchronously in both directions and cleans up', () => {
+  it('maintains unified UI scope globally across both user and admin routes and cleans up', () => {
     const current = reactive(route('/home'))
     const stop = watch(() => isAdminRoute(current), syncUserUiScope, { immediate: true, flush: 'sync' })
     expect(document.documentElement.classList.contains('user-ui')).toBe(true)
     current.path = '/admin/dashboard'
-    expect(document.documentElement.classList.contains('user-ui')).toBe(false)
+    expect(document.documentElement.classList.contains('user-ui')).toBe(true)
     current.path = '/profile'
     expect(document.documentElement.classList.contains('user-ui')).toBe(true)
     current.meta.requiresAdmin = true
-    expect(document.documentElement.classList.contains('user-ui')).toBe(false)
+    expect(document.documentElement.classList.contains('user-ui')).toBe(true)
     stop()
-    syncUserUiScope(false)
     clearUserUiScope()
     expect(document.documentElement.classList.contains('user-ui')).toBe(false)
   })

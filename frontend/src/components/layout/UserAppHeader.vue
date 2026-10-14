@@ -36,6 +36,11 @@
               控制台
             </router-link>
           </li>
+          <li v-if="authStore.isAdmin">
+            <router-link to="/admin/dashboard" :class="{ active: isAdminRouteScope }">
+              管理后台
+            </router-link>
+          </li>
           <li>
             <span class="nav-placeholder-item" title="后续开放">工具链一键配置</span>
           </li>
@@ -120,11 +125,11 @@
                 </div>
 
                 <div class="py-1">
-                  <!-- Full navigation retains the separately served original admin frontend. -->
-                  <a v-if="authStore.isAdmin" href="/admin/dashboard" @click="closeDropdown" class="flex items-center gap-2.5 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors">
+                  <!-- Unified SPA navigation directly to admin console for admins -->
+                  <router-link v-if="authStore.isAdmin" to="/admin/dashboard" @click="closeDropdown" class="flex items-center gap-2.5 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors">
                     <Icon name="grid" size="sm" />
                     <span>管理后台</span>
-                  </a>
+                  </router-link>
                   <router-link to="/dashboard" @click="closeDropdown" class="flex items-center gap-2.5 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors">
                     <Icon name="grid" size="sm" />
                     <span>控制台看板</span>
@@ -169,6 +174,7 @@ import { useI18n } from 'vue-i18n'
 import Icon from '@/components/icons/Icon.vue'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import { FeatureFlags, isFeatureFlagEnabled } from '@/utils/featureFlags'
+import { isAdminRoute } from '@/utils/uiRouteScope'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -176,8 +182,9 @@ const route = useRoute()
 const authStore = useAuthStore()
 const appStore = useAppStore()
 
+const isAdminRouteScope = computed(() => isAdminRoute(route))
 const isPricingActive = computed(() => route.path.startsWith('/models') || route.path.startsWith('/pricing'))
-const isConsoleActive = computed(() => route.path !== '/home' && !isPricingActive.value)
+const isConsoleActive = computed(() => route.path !== '/home' && !isPricingActive.value && !isAdminRouteScope.value)
 
 const user = computed(() => authStore.user)
 const siteName = computed(() => appStore.siteName)
